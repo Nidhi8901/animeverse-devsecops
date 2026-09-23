@@ -38,6 +38,29 @@ pipeline {
             }
         }
 
+        stage('SonarQube Analysis') {
+            steps {
+                echo 'Running SonarQube code quality analysis...'
+
+                withSonarQubeEnv('SonarQube') {
+                    withCredentials([
+                        string(
+                            credentialsId: 'sonarqube-token',
+                            variable: 'SONAR_TOKEN'
+                        )
+                    ]) {
+                        sh '''
+                            ${PYTHON_VENV}/bin/pip install --quiet pysonar
+
+                            SONAR_HOST_URL="${SONAR_HOST_URL}" \
+                            SONAR_TOKEN="${SONAR_TOKEN}" \
+                            ${PYTHON_VENV}/bin/pysonar
+                        '''
+                    }
+                }
+            }
+        }
+
         stage('Build Docker Image') {
             steps {
                 echo 'Building AnimeVerse Docker image...'
