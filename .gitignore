@@ -1,0 +1,11 @@
+venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+.jenkins-venv/
+.env
+.env.*
+!.env.example
+screenshots/
+*.log
+.DS_Store
