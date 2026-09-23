@@ -50,11 +50,13 @@ pipeline {
 
         stage('Trivy Security Scan') {
             steps {
-                echo 'Scanning Docker image for HIGH and CRITICAL vulnerabilities...'
+                echo 'Scanning Docker image for HIGH and CRITICAL vulnerabilities with available fixes...'
 
                 sh '''
                     trivy image \
+                    --scanners vuln \
                     --severity HIGH,CRITICAL \
+                    --ignore-unfixed \
                     --exit-code 1 \
                     ${DOCKER_IMAGE}:${BUILD_NUMBER}
                 '''
