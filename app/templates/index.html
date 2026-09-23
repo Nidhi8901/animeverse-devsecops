@@ -2,90 +2,134 @@
 <html lang="en">
 
 <head>
-
     <meta charset="UTF-8">
 
-    <meta name="viewport"
-          content="width=device-width, initial-scale=1.0">
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
 
-    <title>AnimeVerse</title>
+    <meta
+        name="description"
+        content="AnimeVerse - Discover and download beautiful anime wallpapers."
+    >
 
-    <link rel="stylesheet"
-          href="{{ url_for('static', filename='css/style.css') }}">
+    <title>AnimeVerse | Anime Wallpapers</title>
 
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='css/style.css') }}"
+    >
 </head>
 
 <body>
 
-    <!-- NAVIGATION -->
+    <header class="navbar">
 
-    <nav class="navbar">
+        <div class="nav-container">
 
-        <div class="logo">
-            ✦ Anime<span>Verse</span>
+            <a href="/" class="logo">
+                <span class="logo-icon">✦</span>
+                AnimeVerse
+            </a>
+
+            <nav class="nav-links">
+                <a href="#home">Home</a>
+                <a href="#wallpapers">Wallpapers</a>
+                <a href="#categories">Categories</a>
+            </nav>
+
         </div>
 
-        <div class="nav-links">
+    </header>
 
-            <a href="#home">Home</a>
-            <a href="#explore">Explore</a>
-            <a href="#trending">Trending</a>
-
-        </div>
-
-        <button class="favorite-btn">
-            ♡ Favorites
-        </button>
-
-    </nav>
-
-
-    <!-- HERO -->
 
     <section class="hero" id="home">
 
         <div class="hero-content">
 
-            <p class="eyebrow">
-                ✦ YOUR ANIME UNIVERSE
+            <p class="hero-label">
+                ✦ ANIME WALLPAPER COLLECTION
             </p>
 
             <h1>
-                FIND YOUR<br>
-                <span>PERFECT</span><br>
-                WALLPAPER.
+                Your World of
+                <span>Anime</span>
             </h1>
 
-            <p class="hero-text">
-                Discover beautiful anime-inspired wallpapers,
-                characters and digital worlds for your screen.
+            <p class="hero-description">
+                Discover beautiful anime wallpapers and
+                download your favorites for your desktop
+                or mobile device.
             </p>
 
-            <a href="#explore" class="hero-button">
-                Explore Wallpapers →
+            <a href="#wallpapers" class="hero-button">
+                Explore Wallpapers
+                <span>↓</span>
             </a>
 
         </div>
 
-        <div class="hero-art">
+    </section>
 
-            <div class="glow"></div>
 
-            <div class="hero-card">
+    <section class="categories-section" id="categories">
 
-                <div class="hero-card-content">
+        <div class="section-container">
 
-                    <span>FEATURED</span>
+            <div class="section-heading">
 
-                    <h2>
-                        Enter<br>
-                        Another<br>
-                        World.
-                    </h2>
+                <p class="section-label">
+                    EXPLORE
+                </p>
 
-                    <p>AnimeVerse Collection</p>
+                <h2>
+                    Browse Categories
+                </h2>
 
-                </div>
+                <p>
+                    Find wallpapers from your favorite anime.
+                </p>
+
+            </div>
+
+
+            <div class="category-buttons">
+
+                <button
+                    class="category-btn active"
+                    data-category="All"
+                >
+                    All
+                </button>
+
+                <button
+                    class="category-btn"
+                    data-category="Demon Slayer"
+                >
+                    Demon Slayer
+                </button>
+
+                <button
+                    class="category-btn"
+                    data-category="Jujutsu Kaisen"
+                >
+                    Jujutsu Kaisen
+                </button>
+
+                <button
+                    class="category-btn"
+                    data-category="Tokyo Revengers"
+                >
+                    Tokyo Revengers
+                </button>
+
+                <button
+                    class="category-btn"
+                    data-category="Wind Breaker"
+                >
+                    Wind Breaker
+                </button>
 
             </div>
 
@@ -94,142 +138,188 @@
     </section>
 
 
-    <!-- CATEGORIES -->
+    <main
+        class="wallpapers-section"
+        id="wallpapers"
+    >
 
-    <section class="categories" id="explore">
+        <div class="section-container">
 
-        <div class="section-heading">
+            <div class="wallpapers-header">
 
-            <div>
-                <p class="eyebrow">EXPLORE</p>
-                <h2>Choose your vibe.</h2>
+                <div>
+
+                    <p class="section-label">
+                        COLLECTION
+                    </p>
+
+                    <h2>
+                        Anime Wallpapers
+                    </h2>
+
+                </div>
+
+
+                <div class="search-container">
+
+                    <span class="search-icon">
+                        ⌕
+                    </span>
+
+                    <input
+                        type="text"
+                        id="searchInput"
+                        placeholder="Search wallpapers..."
+                        aria-label="Search wallpapers"
+                    >
+
+                </div>
+
             </div>
 
+
+            <div
+                class="wallpaper-grid"
+                id="wallpaperGrid"
+            >
+
+                {% for wallpaper in wallpapers %}
+
+                <article
+                    class="wallpaper-card"
+                    data-category="{{ wallpaper.category }}"
+                    data-title="{{ wallpaper.title }}"
+                >
+
+                    <div class="image-container">
+
+                        <img
+                            src="{{ wallpaper.image }}"
+                            alt="{{ wallpaper.title }} wallpaper"
+                            loading="lazy"
+                        >
+
+                        <div class="image-overlay">
+
+                            <a
+                                href="{{ wallpaper.download_url }}"
+                                class="download-button"
+                            >
+                                <span>↓</span>
+                                Download
+                            </a>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="card-content">
+
+                        <div>
+
+                            <h3>
+                                {{ wallpaper.title }}
+                            </h3>
+
+                            <p>
+                                {{ wallpaper.category }}
+                            </p>
+
+                        </div>
+
+                        <span class="card-number">
+                            {{ "%02d" | format(wallpaper.id) }}
+                        </span>
+
+                    </div>
+
+                </article>
+
+                {% endfor %}
+
+            </div>
+
+
+            <div
+                class="no-results"
+                id="noResults"
+            >
+
+                <div class="no-results-icon">
+                    ✦
+                </div>
+
+                <h3>
+                    No wallpapers found
+                </h3>
+
+                <p>
+                    Try another search or category.
+                </p>
+
+            </div>
+
+        </div>
+
+    </main>
+
+
+    <footer class="footer">
+
+        <div class="footer-container">
+
+            <div class="footer-brand">
+
+                <a href="/" class="logo">
+                    <span class="logo-icon">✦</span>
+                    AnimeVerse
+                </a>
+
+                <p>
+                    Discover your next favorite anime wallpaper.
+                </p>
+
+            </div>
+
+
+            <div class="footer-links">
+
+                <a href="#home">
+                    Home
+                </a>
+
+                <a href="#wallpapers">
+                    Wallpapers
+                </a>
+
+                <a href="#categories">
+                    Categories
+                </a>
+
+            </div>
+
+        </div>
+
+
+        <div class="footer-bottom">
+
             <p>
-                Find artwork that matches your mood.
+                © 2026 AnimeVerse. Built with Flask.
+            </p>
+
+            <p>
+                DevSecOps Project
             </p>
 
         </div>
 
-
-        <div class="category-list">
-
-            <button class="category active">
-                All
-            </button>
-
-            <button class="category">
-                Action
-            </button>
-
-            <button class="category">
-                Dark
-            </button>
-
-            <button class="category">
-                Fantasy
-            </button>
-
-            <button class="category">
-                Cyberpunk
-            </button>
-
-            <button class="category">
-                Aesthetic
-            </button>
-
-            <button class="category">
-                Minimal
-            </button>
-
-        </div>
-
-    </section>
-
-
-    <!-- WALLPAPERS -->
-
-    <section class="gallery" id="trending">
-
-        <div class="gallery-heading">
-
-            <div>
-
-                <p class="eyebrow">
-                    TRENDING NOW
-                </p>
-
-                <h2>
-                    Popular wallpapers
-                </h2>
-
-            </div>
-
-            <button class="view-all">
-                View all →
-            </button>
-
-        </div>
-
-
-        <div class="wallpaper-grid">
-
-            {% for wallpaper in wallpapers %}
-
-            <article class="wallpaper-card">
-
-                <div class="image-container">
-
-                    <img
-                        src="{{ wallpaper.image }}"
-                        alt="{{ wallpaper.title }}"
-                    >
-
-                    <button class="heart">
-                        ♡
-                    </button>
-
-                    <div class="card-overlay">
-
-                        <span>
-                            {{ wallpaper.category }}
-                        </span>
-
-                        <h3>
-                            {{ wallpaper.title }}
-                        </h3>
-
-                    </div>
-
-                </div>
-
-            </article>
-
-            {% endfor %}
-
-        </div>
-
-    </section>
-
-
-    <!-- FOOTER -->
-
-    <footer>
-
-        <div class="footer-logo">
-            ✦ AnimeVerse
-        </div>
-
-        <p>
-            Your universe of anime aesthetics.
-        </p>
-
-        <p class="copyright">
-            Built with Flask • Docker • Jenkins • AWS
-        </p>
-
     </footer>
 
+
+    <script
+        src="{{ url_for('static', filename='js/script.js') }}"
+    ></script>
 
 </body>
 
