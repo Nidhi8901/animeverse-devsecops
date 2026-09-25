@@ -6,6 +6,5 @@ __pycache__/
 .env
 .env.*
 !.env.example
-screenshots/
 *.log
 .DS_Store
