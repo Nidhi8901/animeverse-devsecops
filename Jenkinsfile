@@ -1,9 +1,13 @@
+```groovy
 pipeline {
 
     agent any
 
     environment {
         DOCKER_IMAGE = "animeverse"
+        AWS_REGION = "ap-south-1"
+        ECR_REGISTRY = "577638393088.dkr.ecr.ap-south-1.amazonaws.com"
+        ECR_REPOSITORY = "animeverse"
         PYTHON_VENV = ".jenkins-venv"
     }
 
@@ -85,6 +89,46 @@ pipeline {
                 '''
             }
         }
+
+        stage('Push Image to ECR') {
+            steps {
+                echo 'Authenticating with AWS and pushing AnimeVerse image to ECR...'
+
+                withCredentials([
+                    aws(
+                        accessKeyVariable: 'AWS_ACCESS_KEY_ID',
+                        credentialsId: 'aws-credentials',
+                        secretKeyVariable: 'AWS_SECRET_ACCESS_KEY'
+                    )
+                ]) {
+                    sh '''
+                        set -e
+
+                        aws sts get-caller-identity
+
+                        aws ecr get-login-password \
+                            --region ${AWS_REGION} | \
+                            docker login \
+                            --username AWS \
+                            --password-stdin ${ECR_REGISTRY}
+
+                        docker tag \
+                            ${DOCKER_IMAGE}:${BUILD_NUMBER} \
+                            ${ECR_REGISTRY}/${ECR_REPOSITORY}:${BUILD_NUMBER}
+
+                        docker tag \
+                            ${DOCKER_IMAGE}:${BUILD_NUMBER} \
+                            ${ECR_REGISTRY}/${ECR_REPOSITORY}:latest
+
+                        docker push \
+                            ${ECR_REGISTRY}/${ECR_REPOSITORY}:${BUILD_NUMBER}
+
+                        docker push \
+                            ${ECR_REGISTRY}/${ECR_REPOSITORY}:latest
+                    '''
+                }
+            }
+        }
     }
 
     post {
@@ -102,3 +146,5 @@ pipeline {
         }
     }
 }
+```
+
