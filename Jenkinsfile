@@ -113,7 +113,6 @@ stages {
                     set -e
 
                     echo "Checking AWS identity..."
-
                     aws sts get-caller-identity
 
                     echo "Logging in to Amazon ECR..."
@@ -161,6 +160,7 @@ stages {
                     secretKeyVariable: 'AWS_SECRET_ACCESS_KEY'
                 )
             ]) {
+
                 sh '''
                     set -e
 
@@ -172,37 +172,44 @@ stages {
                         --query 'taskDefinition' \
                         --output json > task-definition.json
 
-                    echo "Updating container image..."
+                    echo "Creating task definition update script..."
 
-                    python3 - <<PY
+                    printf '%s\\n' \
+                    'import json' \
+                    'import os' \
+                    '' \
+                    'with open("task-definition.json", "r") as f:' \
+                    '    task = json.load(f)' \
+                    '' \
+                    'new_image = os.environ["NEW_IMAGE"]' \
+                    'container_name = os.environ["ECS_CONTAINER_NAME"]' \
+                    '' \
+                    'for container in task["containerDefinitions"]:' \
+                    '    if container["name"] == container_name:' \
+                    '        container["image"] = new_image' \
+                    '' \
+                    'fields_to_remove = [' \
+                    '    "taskDefinitionArn",' \
+                    '    "revision",' \
+                    '    "status",' \
+                    '    "requiresAttributes",' \
+                    '    "compatibilities",' \
+                    '    "registeredAt",' \
+                    '    "registeredBy"' \
+                    ']' \
+                    '' \
+                    'for field in fields_to_remove:' \
+                    '    task.pop(field, None)' \
+                    '' \
+                    'with open("new-task-definition.json", "w") as f:' \
+                    '    json.dump(task, f)' \
+                    > update_task_definition.py
 
-import json
+                    echo "Updating container image in task definition..."
 
-with open("task-definition.json", "r") as f:
-task = json.load(f)
-
-new_image = "${ECR_REGISTRY}/${ECR_REPOSITORY}:${BUILD_NUMBER}"
-
-for container in task["containerDefinitions"]:
-if container["name"] == "${ECS_CONTAINER_NAME}":
-container["image"] = new_image
-
-fields_to_remove = [
-"taskDefinitionArn",
-"revision",
-"status",
-"requiresAttributes",
-"compatibilities",
-"registeredAt",
-"registeredBy"
-]
-
-for field in fields_to_remove:
-task.pop(field, None)
-
-with open("new-task-definition.json", "w") as f:
-json.dump(task, f)
-PY
+                    NEW_IMAGE="${ECR_REGISTRY}/${ECR_REPOSITORY}:${BUILD_NUMBER}" \
+                    ECS_CONTAINER_NAME="${ECS_CONTAINER_NAME}" \
+                    python3 update_task_definition.py
 
                     echo "Registering new ECS task definition..."
 
@@ -231,6 +238,10 @@ PY
                         --region ${AWS_REGION}
 
                     echo "AnimeVerse deployed successfully to ECS Fargate."
+
+                    rm -f task-definition.json
+                    rm -f new-task-definition.json
+                    rm -f update_task_definition.py
                 '''
             }
         }
